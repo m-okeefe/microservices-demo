@@ -15,51 +15,49 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: adservice
+  name: redis-cart
 spec:
   template:
     metadata:
       labels:
-        app: adservice
+        app: redis-cart
     spec:
-      terminationGracePeriodSeconds: 5
       containers:
-      - name: server
-        image: adservice:v0.0.1
+      - name: redis
+        image: redis:alpine
         ports:
-        - containerPort: 9555
-        env:
-        - name: PORT
-          value: "9555"
-        #- name: JAEGER_SERVICE_ADDR
-        #  value: "jaeger-collector:14268"
-        resources:
-          requests:
-            cpu: 200m
-            memory: 180Mi
-          limits:
-            cpu: 300m
-            memory: 300Mi
+        - containerPort: 6379
         readinessProbe:
-          initialDelaySeconds: 20
-          periodSeconds: 15
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:9555"]
+          periodSeconds: 5
+          tcpSocket:
+            port: 6379
         livenessProbe:
-          initialDelaySeconds: 20
-          periodSeconds: 15
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:9555"]
+          periodSeconds: 5
+          tcpSocket:
+            port: 6379
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 125m
+          requests:
+            cpu: 70m
+            memory: 200Mi
+      volumes:
+      - name: redis-data
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: adservice
+  name: redis-cart
 spec:
   type: ClusterIP
   selector:
-    app: adservice
+    app: redis-cart
   ports:
-  - name: grpc
-    port: 9555
-    targetPort: 9555
+  - name: redis
+    port: 6379
+    targetPort: 6379

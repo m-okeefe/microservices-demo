@@ -15,51 +15,52 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: adservice
+  name: cartservice
 spec:
   template:
     metadata:
       labels:
-        app: adservice
+        app: cartservice
     spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: adservice:v0.0.1
+        image: cartservice:v0.0.0
         ports:
-        - containerPort: 9555
+        - containerPort: 7070
         env:
+        - name: REDIS_ADDR
+          value: "redis-cart:6379"
         - name: PORT
-          value: "9555"
-        #- name: JAEGER_SERVICE_ADDR
-        #  value: "jaeger-collector:14268"
+          value: "7070"
+        - name: LISTEN_ADDR
+          value: "0.0.0.0"
         resources:
           requests:
             cpu: 200m
-            memory: 180Mi
+            memory: 64Mi
           limits:
             cpu: 300m
-            memory: 300Mi
+            memory: 128Mi
         readinessProbe:
-          initialDelaySeconds: 20
-          periodSeconds: 15
+          initialDelaySeconds: 15
           exec:
-            command: ["/bin/grpc_health_probe", "-addr=:9555"]
+            command: ["/bin/grpc_health_probe", "-addr=:7070"]
         livenessProbe:
-          initialDelaySeconds: 20
-          periodSeconds: 15
+          initialDelaySeconds: 15
+          periodSeconds: 10
           exec:
-            command: ["/bin/grpc_health_probe", "-addr=:9555"]
+            command: ["/bin/grpc_health_probe", "-addr=:7070"]
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: adservice
+  name: cartservice
 spec:
   type: ClusterIP
   selector:
-    app: adservice
+    app: cartservice
   ports:
   - name: grpc
-    port: 9555
-    targetPort: 9555
+    port: 7070
+    targetPort: 7070
