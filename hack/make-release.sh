@@ -15,6 +15,13 @@ else
     exit 
 fi
 
+if [ -n "$3" ]; then
+    BRANCH=$2
+else
+    echo "Must provide a git branch."
+    exit 
+fi
+
 # iterate over all services: build + push image, inject tag into k8s manifest. 
 for dir in ./src/*/    
 do
@@ -38,10 +45,10 @@ echo "Pushing git tag..."
 git tag $TAG 
 git push --tags
 
-# push updated manifests to master 
-echo "Commiting to master..."
+# push updated manifests 
+echo "Commiting to $BRANCH..."
 git add .
 git commit -m "Tagged release $TAG"
-git push origin master
+git push origin $BRANCH
 
 echo "✅ Successfully tagged release $TAG"
