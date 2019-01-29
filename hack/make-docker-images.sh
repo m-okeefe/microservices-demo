@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Builds and pushes docker image for each demo microservice. 
+# Builds and pushes docker image for each demo microservice.
 
 #!/usr/bin/env bash
 set -euo pipefail
@@ -24,16 +24,16 @@ TAG="${TAG?TAG env variable must be specified}"
 REPO_PREFIX="${REPO_PREFIX?REPO_PREFIX env variable must be specified}"
 
 
-for dir in ./src/*/    
+for dir in ./src/*/
 do
-    # build image  
+    # build image
     svcname="$(basename $dir)"
     image="$REPO_PREFIX/$svcname:$TAG"
-    echo "Building and pushing $image..." 
-    docker build -t $image -f $dir/Dockerfile $dir 
+    echo "Building and pushing $image..."
+    docker build -t $image -f $dir/Dockerfile $dir
 
-    # push image 
-    docker push $image 
+    # push image
+    docker push $image
 done
 
 log "Successfully built and pushed images."

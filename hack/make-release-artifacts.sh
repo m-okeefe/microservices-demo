@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# injects new image/tag into the images in ./release/kubernetes-manifests/demo.yaml 
+# injects new image/tag into the images in ./release/kubernetes-manifests/demo.yaml
 
 #!/usr/bin/env bash
 set -euo pipefail
@@ -30,25 +30,25 @@ tmp="./release/kubernetes-manifests/tmp.yaml"
 [ -e $manifestfile ] && rm $manifestfile
 for f in $src; do (cat "${f}"; echo "---") >> $tmp; done
 
-# remove extra google headers 
-gsed -i '/^#/d' $tmp 
+# remove extra google headers
+gsed -i '/^#/d' $tmp
 
-# remove empty lines 
-gsed -r -i '/^\s*$/d' $tmp 
+# remove empty lines
+gsed -r -i '/^\s*$/d' $tmp
 
-# add 1 google header to the top 
-cat "./release/.googleheader" $tmp > $manifestfile 
-rm $tmp 
+# add 1 google header to the top
+cat "./release/.googleheader" $tmp > $manifestfile
+rm $tmp
 
 
-# replace image repo, tag for each deployment  
-for dir in ./src/*/    
+# replace image repo, tag for each deployment
+for dir in ./src/*/
 do
     svcname="$(basename $dir)"
     image="$REPO_PREFIX/$svcname:$TAG"
 
     pattern="^(\s*)image:\s.*$svcname(.*)(\s*)"
-    replace="\1image: $image\3"  
+    replace="\1image: $image\3"
     gsed -r -i "s|$pattern|$replace|g" $manifestfile
 done
 
