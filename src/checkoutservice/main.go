@@ -161,7 +161,9 @@ func initTracing() {
 func initProfiling(service, version string) {
 	// TODO(ahmetb) this method is duplicated in other microservices using Go
 	// since they are not sharing packages.
-	for i := 1; i <= 3; i++ {
+	log.Info("starting profiling, sleeping 5 seconds...")
+	time.Sleep(time.Second * 5)
+	for i := 1; i <= 100; i++ {
 		if err := profiler.Start(profiler.Config{
 			Service:        service,
 			ServiceVersion: version,
@@ -173,7 +175,7 @@ func initProfiling(service, version string) {
 			log.Info("started stackdriver profiler")
 			return
 		}
-		d := time.Second * 10 * time.Duration(i)
+		d := time.Second * 1 * time.Duration(i)
 		log.Infof("sleeping %v to retry initializing stackdriver profiler", d)
 		time.Sleep(d)
 	}

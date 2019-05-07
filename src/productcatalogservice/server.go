@@ -74,8 +74,6 @@ func init() {
 }
 
 func main() {
-	go initTracing()
-	go initProfiling("productcatalogservice", "1.0.0")
 	flag.Parse()
 
 	// set injected latency
@@ -108,6 +106,11 @@ func main() {
 
 	log.Infof("starting grpc server at :%d", *port)
 	run(*port)
+
+	log.Info("Starting tracing and profiling")
+	go initTracing()
+	go initProfiling("productcatalogservice", "1.0.0")
+
 	select {}
 }
 
