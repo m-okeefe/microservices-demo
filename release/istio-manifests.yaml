@@ -109,3 +109,17 @@ spec:
     name: https
     protocol: HTTPS
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: whitelist-egress-google-metadata2
+spec:
+  hosts:
+  - metadata
+  addresses:
+  - 169.254.169.254 # GCE metadata server
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+---

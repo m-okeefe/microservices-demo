@@ -322,7 +322,8 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: gcr.io/google-samples/microservices-demo/productcatalogservice:v0.1.0
+        image:  gcr.io/mokeefe/productcatalogservice:05062019
+        imagePullPolicy: Always
         ports:
         - containerPort: 3550
         readinessProbe:
