@@ -79,8 +79,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: gcr.io/mokeefe/checkoutservice:sleep
-          imagePullPolicy: Always
+          image: gcr.io/google-samples/microservices-demo/checkoutservice:v0.1.0
           ports:
           - containerPort: 5050
           readinessProbe:
@@ -323,7 +322,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: gcr.io/mokeefe/productcatalogservice:sleep
+        image: gcr.io/google-samples/microservices-demo/productcatalogservice:v0.1.0
         ports:
         - containerPort: 3550
         readinessProbe:
