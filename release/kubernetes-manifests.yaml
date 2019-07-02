@@ -339,7 +339,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: gcr.io/google-samples/microservices-demo/productcatalogservice:v0.1.1
+        image: gcr.io/mokeefe/pctest:latest
         ports:
         - containerPort: 3550
         env:
