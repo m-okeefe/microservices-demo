@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using static System.Diagnostics.Stopwatch;
 using cartservice.interfaces;
 using Grpc.Core;
 using Grpc.Health.V1;
@@ -14,11 +15,17 @@ namespace cartservice {
         }
 
         public override Task<HealthCheckResponse> Check(HealthCheckRequest request, ServerCallContext context){
+            var watch = StartNew();
+
             Console.WriteLine ("Checking CartService Health");
 
-            return Task.FromResult(new HealthCheckResponse {
+            var result = Task.FromResult(new HealthCheckResponse {
                 Status = dependency.Ping() ? HealthCheckResponse.Types.ServingStatus.Serving : HealthCheckResponse.Types.ServingStatus.NotServing
             });
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine ("Health Check took " + elapsedMs + "ms");
+            return result;
         }
     }
 }
