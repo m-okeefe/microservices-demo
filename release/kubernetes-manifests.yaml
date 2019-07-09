@@ -389,14 +389,40 @@ spec:
         app: cartservice
     spec:
       terminationGracePeriodSeconds: 5
+      volumes:
+      - name: redis-data
+        emptyDir: {}
       containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+        readinessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: 6379
+        livenessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: 6379
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 125m
+          requests:
+            cpu: 70m
+            memory: 200Mi
       - name: server
-        image: gcr.io/google-samples/microservices-demo/cartservice:v0.1.1
+        image: gcr.io/mokeefe/cartservice:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 7070
         env:
         - name: REDIS_ADDR
-          value: "redis-cart:6379"
+          value: "localhost:6379"
         - name: PORT
           value: "7070"
         - name: LISTEN_ADDR
@@ -450,9 +476,9 @@ spec:
       initContainers:
       - name: wait-frontend
         image: alpine:3.6
-        command: ['sh', '-c', 'set -x;  apk add --no-cache curl && 
-          until timeout -t 2 curl -f "http://${FRONTEND_ADDR}"; do 
-            echo "waiting for http://${FRONTEND_ADDR}"; 
+        command: ['sh', '-c', 'set -x;  apk add --no-cache curl &&
+          until timeout -t 2 curl -f "http://${FRONTEND_ADDR}"; do
+            echo "waiting for http://${FRONTEND_ADDR}";
             sleep 2;
           done;']
         env:
@@ -575,59 +601,6 @@ spec:
   - name: grpc
     port: 50051
     targetPort: 50051
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: redis-cart
-spec:
-  selector:
-    matchLabels:
-      app: redis-cart
-  template:
-    metadata:
-      labels:
-        app: redis-cart
-    spec:
-      containers:
-      - name: redis
-        image: redis:alpine
-        ports:
-        - containerPort: 6379
-        readinessProbe:
-          periodSeconds: 5
-          tcpSocket:
-            port: 6379
-        livenessProbe:
-          periodSeconds: 5
-          tcpSocket:
-            port: 6379
-        volumeMounts:
-        - mountPath: /data
-          name: redis-data
-        resources:
-          limits:
-            memory: 256Mi
-            cpu: 125m
-          requests:
-            cpu: 70m
-            memory: 200Mi
-      volumes:
-      - name: redis-data
-        emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis-cart
-spec:
-  type: ClusterIP
-  selector:
-    app: redis-cart
-  ports:
-  - name: redis
-    port: 6379
-    targetPort: 6379
 ---
 apiVersion: apps/v1
 kind: Deployment

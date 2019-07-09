@@ -17,7 +17,7 @@ namespace cartservice {
         public override Task<HealthCheckResponse> Check(HealthCheckRequest request, ServerCallContext context){
             var watch = StartNew();
 
-            Console.WriteLine ("Checking CartService Health");
+            Console.WriteLine ("Checking CartService Health " + DateTime.Now.ToString("yyyy-MM-dd h:mm:ss tt"));
 
             var result = Task.FromResult(new HealthCheckResponse {
                 Status = dependency.Ping() ? HealthCheckResponse.Types.ServingStatus.Serving : HealthCheckResponse.Types.ServingStatus.NotServing
