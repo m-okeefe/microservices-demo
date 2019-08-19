@@ -491,7 +491,8 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: gcr.io/google-samples/microservices-demo/currencyservice:v0.1.1
+        image: gcr.io/mokeefe/currency:real
+        imagePullPolicy: Always
         ports:
         - name: grpc
           containerPort: 7000
