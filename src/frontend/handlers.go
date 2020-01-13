@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"io"
 	"math/rand"
 	"net/http"
 	"os"
@@ -84,6 +85,13 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		log.Error(err)
 	}
+}
+
+func (fe *frontendServer) versionHandler(w http.ResponseWriter, r *http.Request) {
+	log := r.Context().Value(ctxKeyLog{}).(logrus.FieldLogger)
+	log.Println(fmt.Sprintf("✅ Received version request - %s\n", fe.version))
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, fmt.Sprintf("%s\n", fe.version))
 }
 
 func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request) {

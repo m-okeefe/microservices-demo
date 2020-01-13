@@ -36,6 +36,8 @@ import (
 )
 
 const (
+	SERVICE_VERSION = "v5"
+
 	port            = "8080"
 	defaultCurrency = "USD"
 	cookieMaxAge    = 60 * 60 * 48
@@ -58,6 +60,8 @@ var (
 type ctxKeySessionID struct{}
 
 type frontendServer struct {
+	version string
+
 	productCatalogSvcAddr string
 	productCatalogSvcConn *grpc.ClientConn
 
@@ -103,6 +107,7 @@ func main() {
 	}
 	addr := os.Getenv("LISTEN_ADDR")
 	svc := new(frontendServer)
+	svc.version = SERVICE_VERSION
 	mustMapEnv(&svc.productCatalogSvcAddr, "PRODUCT_CATALOG_SERVICE_ADDR")
 	mustMapEnv(&svc.currencySvcAddr, "CURRENCY_SERVICE_ADDR")
 	mustMapEnv(&svc.cartSvcAddr, "CART_SERVICE_ADDR")
@@ -121,6 +126,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", svc.homeHandler).Methods(http.MethodGet, http.MethodHead)
+	r.HandleFunc("/version", svc.versionHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/product/{id}", svc.productHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/cart", svc.viewCartHandler).Methods(http.MethodGet, http.MethodHead)
 	r.HandleFunc("/cart", svc.addToCartHandler).Methods(http.MethodPost)
